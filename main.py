@@ -38,9 +38,9 @@ def crop_image(np_image, v_crop=None, h_crop=None):
 
 def transposed_indices(tile_shape):
     n, m = tile_shape
-    for j in range(m):
-        for i in range(n):
-            yield m * i + j
+    for i in range(n):
+        for j in range(m):
+            yield n * j + i
 
 class ChunkManager(object):
     def __init__(self, filename):
@@ -85,8 +85,8 @@ class ChunkManager(object):
             ax.imshow(img)
             ax.axis("off")
         plt.imshow(img)
-        plt.show()
-        #plt.savefig("tmp.pdf", format="pdf", dpi=300)
+        #plt.show()
+        plt.savefig("icra_oven.png", format="png", dpi=300)
 
 if __name__=='__main__':
     filename = "./icra_oven.mp4"
@@ -96,12 +96,13 @@ if __name__=='__main__':
         pass
     cm = ChunkManager(filename)
 
-    time_seq_relative = [0.0, 1.0, 2.0, 3.0, 4.0] 
+    time_seq_relative = [0.4 * i for i in range(11)]
     base_time_list = [3, 42, 16, 56, 29, 69]
     import itertools
     time_seq_whole =itertools.chain.from_iterable(
             [[tr + base_time for tr in time_seq_relative] for base_time in base_time_list])
-    cm.plot_time_sequence(list(time_seq_whole), tile_shape=(6, 5), transpose=True)
+    tile_shape = (len(time_seq_relative), len(base_time_list))
+    cm.plot_time_sequence(list(time_seq_whole), tile_shape=tile_shape, transpose=True)
 
     #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=42.0) # oven after -0.0
     #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=56.0) # oven after -0.04
