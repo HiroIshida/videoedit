@@ -36,6 +36,12 @@ def crop_image(np_image, v_crop=None, h_crop=None):
     hs, he = slice_spec_lst[1]
     return np_image[vs:ve, hs:he]
 
+def transposed_indices(tile_shape):
+    n, m = tile_shape
+    for j in range(m):
+        for i in range(n):
+            yield m * i + j
+
 class ChunkManager(object):
     def __init__(self, filename):
         self.fps = 30
@@ -48,11 +54,15 @@ class ChunkManager(object):
         img = Image.open(image_name)
         return np.array(img)
 
-    def plot_time_sequence(self, time_seq, base_time=0, tile_shape=None, v_crop=None, h_crop=None):
+    def plot_time_sequence(self, time_seq, base_time=0, tile_shape=None, v_crop=None, h_crop=None, transpose=False):
         if tile_shape is not None:
-            assert len(time_seq) == math.prod(tile_shape)
+            assert len(time_seq) == np.prod(tile_shape)
         else:
             tile_shape = (len(time_seq), 1)
+
+        print(list(transposed_indices(tile_shape)))
+        if transpose:
+            time_seq = np.array(time_seq)[list(transposed_indices(tile_shape))]
 
         img_seq = [
                 crop_image(self.get_frame(t+base_time), v_crop, h_crop)
@@ -86,11 +96,18 @@ if __name__=='__main__':
         pass
     cm = ChunkManager(filename)
 
-    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=42.0) # oven before -0.04
+    time_seq_relative = [0.0, 1.0, 2.0, 3.0, 4.0] 
+    base_time_list = [3, 42, 16, 56, 29, 69]
+    import itertools
+    time_seq_whole =itertools.chain.from_iterable(
+            [[tr + base_time for tr in time_seq_relative] for base_time in base_time_list])
+    cm.plot_time_sequence(list(time_seq_whole), tile_shape=(6, 5), transpose=True)
+
+    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=42.0) # oven after -0.0
     #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=56.0) # oven after -0.04
     #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=69.0) # oven after 0.06
 
-    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=3.0) # oven before -0.04
+    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=3.0) # oven before 0.0
     #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=16.0) # oven before -0.04
     #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=29.0) # oven before 0.06
 
