@@ -48,39 +48,43 @@ class ChunkManager(object):
         img = Image.open(image_name)
         return np.array(img)
 
-def plot_sequence(img_seq, tile_shape=None):
-    if tile_shape is None:
-        tile_shape = (1, len(img_seq))
+    def plot_time_sequence(self, time_seq, base_time=0, tile_shape=None, v_crop=None, h_crop=None):
+        if tile_shape is not None:
+            assert len(time_seq) == math.prod(tile_shape)
+        else:
+            tile_shape = (len(time_seq), 1)
 
-    height, width, _ = img_seq[0].shape
-    image_ratio = height/(width*1.0)
-    tile_ratio = tile_shape[0]/(tile_shape[1]*1.0)
+        img_seq = [
+                crop_image(self.get_frame(t+base_time), v_crop, h_crop)
+                for t in time_seq]
+        if tile_shape is None:
+            tile_shape = (1, len(img_seq))
 
-    fig = plt.figure(figsize=tile_shape)
-    fig.set_size_inches(6, 6*image_ratio*tile_ratio)
-    fig.tight_layout()
-    gspec = gridspec.GridSpec(*tile_shape)
-    gspec.update(wspace=0.02, hspace=0.02)
-    axes = [plt.subplot(gspec[i]) for i in range(len(img_seq))]
+        height, width, _ = img_seq[0].shape
+        image_ratio = height/(width*1.0)
+        tile_ratio = tile_shape[0]/(tile_shape[1]*1.0)
 
-    N = len(img_seq)
-    t_lst_ = ["0.0", "1.0", "2.5", "5.0"]
-    t_lst = t_lst_ + t_lst_
-    for i in range(N):
-        ax, img = axes[i], img_seq[i]
-        ax.imshow(img)
-        ax.axis("off")
+        fig = plt.figure(figsize=tile_shape)
+        fig.set_size_inches(6, 6*image_ratio*tile_ratio)
+        fig.tight_layout()
+        gspec = gridspec.GridSpec(*tile_shape)
+        gspec.update(wspace=0.02, hspace=0.02)
+        axes = [plt.subplot(gspec[i]) for i in range(len(img_seq))]
 
-        """
-        pre = "(a)" if i < N/2 else "(b)"
-        label = pre + " t = " +  t_lst[i] + " s"
-        ax.text(0.05, 0.03, label, 
-                transform=ax.transAxes, 
-                fontsize=9)
-        """
-    plt.imshow(img)
-    #plt.show()
-    plt.savefig("tmp.pdf", format="pdf", dpi=300)
+        N = len(img_seq)
+        t_lst_ = ["0.0", "1.0", "2.5", "5.0"]
+        t_lst = t_lst_ + t_lst_
+        for i in range(N):
+            ax, img = axes[i], img_seq[i]
+            ax.imshow(img)
+            ax.axis("off")
+            """
+            ax.text(0.05, 0.03, label, 
+                    transform=ax.transAxes, 
+                    fontsize=9)
+            """
+        plt.imshow(img)
+        plt.savefig("tmp.pdf", format="pdf", dpi=300)
 
 if __name__=='__main__':
     filename = "./icra_oven.mp4"
@@ -89,7 +93,5 @@ if __name__=='__main__':
     except:
         pass
     cm = ChunkManager(filename)
-    frame = cm.get_frame(0)
-    frames = [frame]*6
-    plot_sequence(frames, (6, 1))
+    cm.plot_time_sequence([0, 1, 2, 3, 4], base_time=2.0)
 
