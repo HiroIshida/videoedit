@@ -71,20 +71,12 @@ class ChunkManager(object):
         gspec.update(wspace=0.02, hspace=0.02)
         axes = [plt.subplot(gspec[i]) for i in range(len(img_seq))]
 
-        N = len(img_seq)
-        t_lst_ = ["0.0", "1.0", "2.5", "5.0"]
-        t_lst = t_lst_ + t_lst_
-        for i in range(N):
-            ax, img = axes[i], img_seq[i]
+        for ax, img in zip(axes, img_seq):
             ax.imshow(img)
             ax.axis("off")
-            """
-            ax.text(0.05, 0.03, label, 
-                    transform=ax.transAxes, 
-                    fontsize=9)
-            """
         plt.imshow(img)
-        plt.savefig("tmp.pdf", format="pdf", dpi=300)
+        plt.show()
+        #plt.savefig("tmp.pdf", format="pdf", dpi=300)
 
 if __name__=='__main__':
     filename = "./icra_oven.mp4"
@@ -93,5 +85,14 @@ if __name__=='__main__':
     except:
         pass
     cm = ChunkManager(filename)
-    cm.plot_time_sequence([0, 1, 2, 3, 4], base_time=2.0)
+
+    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=42.0) # oven before -0.04
+    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=56.0) # oven after -0.04
+    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=69.0) # oven after 0.06
+
+    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=3.0) # oven before -0.04
+    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=16.0) # oven before -0.04
+    #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=29.0) # oven before 0.06
+
+
 
