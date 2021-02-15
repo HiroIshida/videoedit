@@ -121,7 +121,7 @@ if __name__=='__main__':
         time_seq = time_seq_base + base_time
         cm.plot_time_sequence(time_seq, tile_shape=(1, n), filename="after_05.png", v_crop=None)
 
-    oven_before = True
+    oven_before = False
     if oven_before:
         n = 6
         time_seq_base = np.array([0 + 0.5 * i for i in range(n)])
@@ -135,20 +135,6 @@ if __name__=='__main__':
         time_seq = time_seq_base + base_time
         cm.plot_time_sequence(time_seq, tile_shape=(1, n), filename="before_30.png", v_crop=None)
 
-    """ magic grasp
-    time_seq_base = np.array([0.8 * i for i in range(6)] + [5.5])
-    filename = "/home/hiro/catkin_ws/src/oven-10.29.final/data/video/before_part1.mp4"
-    try:
-        prepare(filename)
-    except:
-        pass
-    cm = ChunkManager(filename)
-    base_time = 4.0
-    time_seq = time_seq_base + base_time
-    cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com1_after_seq.png", v_crop=[0.2, 0.8])
-    """
-    
-    """ magic grasp
     def create_seq_com1():
         filename = "/home/hiro/catkin_ws/src/magicgrasp/video/demo_com1.mp4"
         try:
@@ -157,13 +143,18 @@ if __name__=='__main__':
             pass
         cm = ChunkManager(filename)
 
-        base_time = 4.0
-        time_seq = time_seq_base + base_time
-        cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com1_after_seq.png", v_crop=[0.2, 0.8])
+        time_seq_base = np.array([0 + 0.8 * i for i in range(7)])
 
-        base_time = 19.0
+        h_crop = [0.0, 0.9]
+        v_crop = [0.05, 0.8]
+
+        base_time = 13.0
         time_seq = time_seq_base + base_time
-        cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com1_before_seq.png", v_crop=[0.2, 0.8])
+        cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com1_after_seq.png", h_crop=h_crop, v_crop=v_crop)
+
+        base_time = 35.0
+        time_seq = time_seq_base + base_time
+        cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com1_before_seq.png", h_crop=h_crop, v_crop=v_crop)
 
     def create_seq_com2():
         filename = "/home/hiro/catkin_ws/src/magicgrasp/video/demo_com2.mp4"
@@ -173,14 +164,20 @@ if __name__=='__main__':
             pass
         cm = ChunkManager(filename)
 
-        base_time = 4.5
+        h_crop = [0.0, 0.9]
+        v_crop = [0.05, 0.8]
+        time_seq_base = np.array([0 + 0.8 * i for i in range(7)])
+        base_time = 7.0
         time_seq = time_seq_base + base_time
-        cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com2_after_seq.png", v_crop=[0.2, 0.8])
+        #cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com2_after_seq.png", v_crop=[0.2, 0.8])
+        cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com2_after_seq.png", h_crop=h_crop, v_crop=v_crop)
 
-        base_time = 24.0
+        base_time = 29.5
         time_seq = time_seq_base + base_time
-        cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com2_before_seq.png", v_crop=[0.2, 0.8])
-    """
+        cm.plot_time_sequence(time_seq, tile_shape=(1, 7), filename="com2_before_seq.png", h_crop=h_crop, v_crop=v_crop)
+
+    create_seq_com1()
+    create_seq_com2()
 
 
     #cm.plot_time_sequence([0.0, 1.0, 2.0, 3.0, 4.0], base_time=42.0) # oven after -0.0
